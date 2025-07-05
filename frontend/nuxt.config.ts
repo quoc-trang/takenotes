@@ -6,7 +6,9 @@ export default defineNuxtConfig({
   ],
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
-    apiBase: ''
+    public: {
+      apiBaseURL: process.env.NUXT_PUBLIC_API_BASE_URL
+    }
   },
   app: {
     head: {

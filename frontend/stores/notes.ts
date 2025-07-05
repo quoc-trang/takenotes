@@ -26,15 +26,14 @@ export const useNotesStore = defineStore('notes', () => {
     error.value = null
     
     try {
-      const { data } = await $fetch('/api/notes', {
-        baseURL: useRuntimeConfig().public.apiBase,
+      const response = await $fetch('/api/notes', {
         headers: {
           'Authorization': `Bearer ${authStore.token}`
         }
       })
-      notes.value = data
+      notes.value = response
     } catch (err: any) {
-      error.value = err.message || 'Failed to fetch notes'
+      error.value = err.data?.message || err.statusMessage || 'Failed to fetch notes'
     } finally {
       loading.value = false
     }
@@ -46,7 +45,6 @@ export const useNotesStore = defineStore('notes', () => {
     
     try {
       const newNote = await $fetch('/api/notes', {
-        baseURL: useRuntimeConfig().public.apiBase,
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${authStore.token}`,
@@ -57,7 +55,7 @@ export const useNotesStore = defineStore('notes', () => {
       notes.value.unshift(newNote)
       return newNote
     } catch (err: any) {
-      throw new Error(err.message || 'Failed to create note')
+      throw new Error(err.data?.message || err.statusMessage || 'Failed to create note')
     }
   }
 
@@ -67,7 +65,6 @@ export const useNotesStore = defineStore('notes', () => {
     
     try {
       const updatedNote = await $fetch(`/api/notes/${id}`, {
-        baseURL: useRuntimeConfig().public.apiBase,
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${authStore.token}`,
@@ -82,7 +79,7 @@ export const useNotesStore = defineStore('notes', () => {
       }
       return updatedNote
     } catch (err: any) {
-      throw new Error(err.message || 'Failed to update note')
+      throw new Error(err.data?.message || err.statusMessage || 'Failed to update note')
     }
   }
 
@@ -92,7 +89,6 @@ export const useNotesStore = defineStore('notes', () => {
     
     try {
       await $fetch(`/api/notes/${id}`, {
-        baseURL: useRuntimeConfig().public.apiBase,
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${authStore.token}`
@@ -101,7 +97,7 @@ export const useNotesStore = defineStore('notes', () => {
       
       notes.value = notes.value.filter(note => note.id !== id)
     } catch (err: any) {
-      throw new Error(err.message || 'Failed to delete note')
+      throw new Error(err.data?.message || err.statusMessage || 'Failed to delete note')
     }
   }
 

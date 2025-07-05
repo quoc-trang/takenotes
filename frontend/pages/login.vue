@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '~/stores/auth'
+import { useAuthStore } from '@/stores/auth'
 
 definePageMeta({
   layout: false
@@ -66,6 +66,7 @@ definePageMeta({
 
 const authStore = useAuthStore()
 const router = useRouter()
+const logger = useLogger()
 
 const form = ref({
   email: '',
@@ -79,17 +80,29 @@ const handleLogin = async () => {
   loading.value = true
   error.value = ''
   
+  logger.userAction('Login attempt', { email: form.value.email })
+  
   try {
+    const startTime = Date.now()
     const response = await $fetch('/api/auth/login', {
-      baseURL: useRuntimeConfig().public.apiBase,
       method: 'POST',
       body: form.value
     })
+
+    const duration = Date.now() - startTime
     
+    logger.apiCall('POST', '/api/auth/login', 200, duration)
+    logger.userAction('Login successful', { email: form.value.email })
+    
+    // Store authentication data
     authStore.setAuth(response.user, response.token)
-    router.push('/notes')
+    
+    // Navigate to notes page
+    await router.push('/notes')
+    
   } catch (err: any) {
-    error.value = err.data?.message || 'Login failed'
+    logger.error('Login failed', err)
+    error.value = err.data?.message || err.statusMessage || 'Login failed'
   } finally {
     loading.value = false
   }
