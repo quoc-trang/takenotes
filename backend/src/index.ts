@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth';
 import noteRoutes from './routes/notes';
 import { errorHandler } from './middleware/errorHandler';
+import logger from './utils/logger';
 
 dotenv.config();
 
@@ -19,12 +20,19 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Request logging middleware
+app.use((req, res, next) => {
+  logger.http(`${req.method} ${req.url} - ${req.ip}`);
+  next();
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
+  logger.info('Health check requested');
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
@@ -32,5 +40,6 @@ app.get('/health', (req, res) => {
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  logger.info(`Server running on port ${PORT}`);
+  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
 }); 
