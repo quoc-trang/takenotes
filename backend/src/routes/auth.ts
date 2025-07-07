@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import logger from '../utils/logger';
+import { authenticateToken, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -54,7 +55,7 @@ router.post('/register', [
     const token = jwt.sign(
       { id: user.id, email: user.email },
       process.env.JWT_SECRET!,
-      { expiresIn: '7d' }
+      { expiresIn: '24h' }
     );
 
     logger.info(`User registered successfully: ${email} (ID: ${user.id})`);
@@ -107,7 +108,7 @@ router.post('/login', [
     const token = jwt.sign(
       { id: user.id, email: user.email },
       process.env.JWT_SECRET!,
-      { expiresIn: '7d' }
+      { expiresIn: '24h' }
     );
 
     logger.info(`User logged in successfully: ${email} (ID: ${user.id})`);
@@ -122,6 +123,62 @@ router.post('/login', [
     });
   } catch (error) {
     logger.error(`Login error: ${error}`);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Refresh token endpoint
+router.post('/refresh', authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
+    // Find user to ensure they still exist
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: {
+        id: true,
+        email: true,
+        createdAt: true,
+      }
+    });
+
+    if (!user) {
+      logger.warn(`Token refresh failed - user not found: ${req.user.id}`);
+      return res.status(401).json({ message: 'User not found' });
+    }
+
+    // Generate new token
+    const newToken = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET!,
+      { expiresIn: '24h' }
+    );
+
+    logger.info(`Token refreshed successfully for user: ${user.email} (ID: ${user.id})`);
+    res.json({
+      message: 'Token refreshed successfully',
+      user,
+      token: newToken
+    });
+  } catch (error) {
+    logger.error(`Token refresh error: ${error}`);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Logout endpoint (optional - for server-side logout tracking)
+router.post('/logout', authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
+    logger.info(`User logged out: ${req.user.email} (ID: ${req.user.id})`);
+    res.json({ message: 'Logout successful' });
+  } catch (error) {
+    logger.error(`Logout error: ${error}`);
     res.status(500).json({ message: 'Server error' });
   }
 });

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { jwtDecode } from 'jwt-decode'
 
 interface User {
   id: string
@@ -6,42 +7,71 @@ interface User {
   createdAt: string
 }
 
+interface JWTPayload {
+  id: string
+  email: string
+  exp: number
+  iat: number
+}
+
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<User | null>(null)
   const token = ref<string | null>(null)
-  const isAuthenticated = ref(false)
 
-  const getUser = computed(() => user.value)
-  const getToken = computed(() => token.value)
-  const isLoggedIn = computed(() => isAuthenticated.value)
+  const decodedToken = computed<JWTPayload | null>(() => {
+    if (!token.value) return null
+    try {
+      return jwtDecode<JWTPayload>(token.value)
+    } catch {
+      return null
+    }
+  })
 
-  const setAuth = (newUser: User, newToken: string) => {
-    user.value = newUser
+  const user = computed<User | null>(() => {
+    const decoded = decodedToken.value
+    if (!decoded) return null
+    return {
+      id: decoded.id,
+      email: decoded.email,
+      createdAt: new Date(decoded.iat * 1000).toISOString(),
+    }
+  })
+
+  const isLoggedIn = computed(() => {
+    const decoded = decodedToken.value
+    if (!decoded) return false
+    return decoded.exp > Date.now() / 1000
+  })
+
+  const isTokenExpired = computed(() => !isLoggedIn.value)
+
+  const getTokenExpiration = computed(() => {
+    const decoded = decodedToken.value
+    if (!decoded) return null
+    return new Date(decoded.exp * 1000)
+  })
+
+  const setAuth = (newToken: string) => {
     token.value = newToken
-    isAuthenticated.value = true
   }
 
   const logout = () => {
-    user.value = null
     token.value = null
-    isAuthenticated.value = false
   }
 
   return {
     // State
-    user,
     token,
-    isAuthenticated,
-    
-    // Getters
-    getUser,
-    getToken,
+
+    // Computed
+    user,
     isLoggedIn,
-    
+    isTokenExpired,
+    getTokenExpiration,
+
     // Actions
     setAuth,
-    logout
+    logout,
   }
 }, {
   persist: true
-}) 
+})

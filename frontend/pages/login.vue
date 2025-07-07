@@ -95,7 +95,7 @@ const handleLogin = async () => {
     logger.userAction('Login successful', { email: form.value.email })
     
     // Store authentication data
-    authStore.setAuth(response.user, response.token)
+    authStore.setAuth(response.token)
     
     // Navigate to notes page
     await router.push('/notes')
