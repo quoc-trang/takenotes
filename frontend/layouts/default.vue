@@ -1,51 +1,47 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <!-- Token expiration warning -->
-    <div v-if="showExpirationWarning" class="bg-yellow-50 border-b border-yellow-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <svg class="w-5 h-5 text-yellow-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-            </svg>
-            <span class="text-sm text-yellow-800">
-              Your session will expire in {{ timeUntilExpiration }}
-            </span>
-          </div>
-          <button 
-            @click="handleRefreshToken" 
-            class="text-sm text-yellow-800 hover:text-yellow-900 underline"
-            :disabled="refreshing"
-          >
-            {{ refreshing ? 'Refreshing...' : 'Refresh Session' }}
-          </button>
-        </div>
+  <div class="flex min-h-screen bg-white font-sans">
+    <!-- Sidebar -->
+    <aside v-if="authStore.isLoggedIn" class="notion-sidebar">
+      <NuxtLink to="/notes" class="text-2xl font-bold mb-8 px-2 text-gray-900">TakeNotes</NuxtLink>
+      <nav class="flex-1 flex flex-col gap-1">
+        <NuxtLink to="/notes" class="notion-sidebar-link">All Notes</NuxtLink>
+        <NuxtLink to="/notes/new" class="notion-sidebar-link">New Note</NuxtLink>
+      </nav>
+      <div class="mt-auto pt-8 border-t border-gray-200">
+        <button @click="logout" class="notion-sidebar-link w-full text-left">Logout</button>
       </div>
-    </div>
+    </aside>
 
-    <nav v-if="authStore.isLoggedIn" class="bg-white shadow-sm border-b">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex items-center">
-            <NuxtLink to="/notes" class="text-xl font-bold text-gray-900">
-              TakeNotes
-            </NuxtLink>
-          </div>
-          <div class="flex items-center space-x-4">
-            <NuxtLink to="/notes" class="text-gray-700 hover:text-gray-900">
-              Notes
-            </NuxtLink>
-            <button @click="logout" class="text-gray-700 hover:text-gray-900">
-              Logout
+    <!-- Main content -->
+    <div class="flex-1 flex flex-col min-h-screen">
+      <!-- Token expiration warning -->
+      <div v-if="showExpirationWarning" class="bg-yellow-50 border-b border-yellow-200">
+        <div class="max-w-3xl mx-auto px-4 py-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-yellow-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+              <span class="text-sm text-yellow-800">
+                Your session will expire in {{ timeUntilExpiration }}
+              </span>
+            </div>
+            <button 
+              @click="handleRefreshToken" 
+              class="text-sm text-yellow-800 hover:text-yellow-900 underline"
+              :disabled="refreshing"
+            >
+              {{ refreshing ? 'Refreshing...' : 'Refresh Session' }}
             </button>
           </div>
         </div>
       </div>
-    </nav>
-    
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <slot />
-    </main>
+      <main class="flex-1 flex flex-col items-center bg-white">
+        <div class="w-full max-w-3xl px-4 py-10">
+          <slot />
+        </div>
+      </main>
+    </div>
   </div>
 </template>
 
