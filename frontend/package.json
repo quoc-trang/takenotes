@@ -17,6 +17,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@nuxthub/core": "^0.9.0",
     "@pinia/nuxt": "^0.5.1",
     "@tiptap/extension-bold": "^2.1.13",
     "@tiptap/extension-bullet-list": "^2.1.13",

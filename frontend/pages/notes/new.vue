@@ -40,10 +40,12 @@
 
 <script setup lang="ts">
 import { useNotesStore } from '@/stores/notes'
-import { useAuthStore } from '@/stores/auth'
+
+definePageMeta({
+  middleware: 'auth'
+})
 
 const notesStore = useNotesStore()
-const authStore = useAuthStore()
 const router = useRouter()
 
 const form = ref({
@@ -53,12 +55,6 @@ const form = ref({
 
 const loading = ref(false)
 const error = ref('')
-
-onMounted(() => {
-  if (!authStore.isLoggedIn) {
-    router.push('/login')
-  }
-})
 
 const handleCreate = async () => {
   loading.value = true
