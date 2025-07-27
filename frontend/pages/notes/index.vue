@@ -83,8 +83,8 @@
             </div>
           </div>
           
-          <p class="text-gray-600 line-clamp-3 mb-4">
-            {{ note.content }}
+          <p class="text-gray-600 line-clamp-3 mb-4" v-html="note.content">
+            
           </p>
           
           <div class="flex justify-between items-center text-sm text-gray-500">
