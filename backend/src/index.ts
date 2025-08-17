@@ -7,18 +7,18 @@ import noteRoutes from './routes/notes';
 import { errorHandler } from './middleware/errorHandler';
 import logger from './utils/logger';
 
-dotenv.config();
+dotenv.config(); // loads environment variables from .env file
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(helmet());
+app.use(helmet()); // protects from well-known web vulnerabilities
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json()); // parses incoming requests with JSON payloads
 
 // Request logging middleware
 app.use((req, res, next) => {
