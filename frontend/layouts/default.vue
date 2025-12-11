@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen bg-white font-sans">
+  <div class="flex min-h-screen bg-white font-sans ">
     <!-- Sidebar -->
     <aside v-if="authStore.isLoggedIn" class="notion-sidebar">
       <NuxtLink to="/notes" class="text-2xl font-bold mb-8 px-2 text-gray-900">TakeNotes</NuxtLink>
@@ -13,7 +13,7 @@
     </aside>
 
     <!-- Main content -->
-    <div class="flex-1 flex flex-col min-h-screen">
+    <div class="flex flex-col min-h-screen items-center flex-1">
       <!-- Token expiration warning -->
       <div v-if="showExpirationWarning" class="bg-yellow-50 border-b border-yellow-200">
         <div class="max-w-3xl mx-auto px-4 py-2">
@@ -37,7 +37,7 @@
         </div>
       </div>
       <main class="flex-1 flex flex-col items-center bg-white">
-        <div class="w-full max-w-3xl px-4 py-10">
+        <div class="w-full px-4 py-10">
           <slot />
         </div>
       </main>
