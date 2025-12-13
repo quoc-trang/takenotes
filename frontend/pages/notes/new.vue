@@ -41,10 +41,6 @@
 <script setup lang="ts">
 import { useNotesStore } from '@/stores/notes'
 
-definePageMeta({
-  middleware: 'auth'
-})
-
 const notesStore = useNotesStore()
 const router = useRouter()
 

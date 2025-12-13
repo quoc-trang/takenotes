@@ -244,10 +244,6 @@
 import { useNotesStore } from '@/stores/notes';
 import { useAuthStore } from '@/stores/auth';
 
-definePageMeta({
-  middleware: 'auth',
-});
-
 const notesStore = useNotesStore();
 const authStore = useAuthStore();
 const router = useRouter();

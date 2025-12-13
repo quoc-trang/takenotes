@@ -16,3 +16,11 @@
     </div>
   </div>
 </template> 
+
+<script setup lang="ts">
+const { isLoggedIn } = storeToRefs(useAuthStore())
+
+if(import.meta.client && isLoggedIn.value){
+  navigateTo('/notes')
+}
+</script>
