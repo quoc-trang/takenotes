@@ -13,7 +13,7 @@
     </aside>
 
     <!-- Main content -->
-    <div class="flex flex-col min-h-screen items-center flex-1">
+    <div class="flex flex-col min-h-screen flex-1">
       <!-- Token expiration warning -->
       <div v-if="showExpirationWarning" class="bg-yellow-50 border-b border-yellow-200">
         <div class="max-w-3xl mx-auto px-4 py-2">

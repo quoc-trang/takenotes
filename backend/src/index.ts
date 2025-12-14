@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth';
 import noteRoutes from './routes/notes';
+import uploadRoutes from './routes/upload';
 import { errorHandler } from './middleware/errorHandler';
 import logger from './utils/logger';
 
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
+app.use('/api/upload', uploadRoutes)
 
 // Health check
 app.get('/health', (req, res) => {
